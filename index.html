@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echoes of the Hollow Vale</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #1a1a1a;
+      color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    .container {
+      margin-top: 40px;
+    }
+    button {
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Echoes of the Hollow Vale</h1>
+  <div class="container" id="game"></div>
+
+  <script>
+    const characters = {
+      scholar: {
+        name: "Wayward Scholar",
+        intro: "A brilliant mind driven by curiosity, you seek forbidden knowledge hidden in forgotten tomes."
+      },
+      blade: {
+        name: "Wandering Blade",
+        intro: "A weary warrior with a code, you seek redemption in one final mission."
+      },
+      rogue: {
+        name: "Shadowed Rogue",
+        intro: "You move in silence, always watching. You trust no one and live by your instincts."
+      },
+      mystic: {
+        name: "Mystic Acolyte",
+        intro: "You were touched by something beyond this world — a voice from the veil whispers secrets only you can hear."
+      }
+    };
+
+    const storyNodes = {
+      start: {
+        text: "Choose your character:",
+        choices: [
+          { text: characters.scholar.name, next: "intro_scholar", character: "scholar" },
+          { text: characters.blade.name, next: "intro_blade", character: "blade" },
+          { text: characters.rogue.name, next: "intro_rogue", character: "rogue" },
+          { text: characters.mystic.name, next: "intro_mystic", character: "mystic" }
+        ]
+      },
+      intro_scholar: {
+        text: characters.scholar.intro,
+        choices: [{ text: "Continue...", next: "act1" }]
+      },
+      intro_blade: {
+        text: characters.blade.intro,
+        choices: [{ text: "Continue...", next: "act1" }]
+      },
+      intro_rogue: {
+        text: characters.rogue.intro,
+        choices: [{ text: "Continue...", next: "act1" }]
+      },
+      intro_mystic: {
+        text: characters.mystic.intro,
+        choices: [{ text: "Continue...", next: "act1" }]
+      },
+      act1: {
+        text: "You arrive at the edge of Hollow Vale, where the village elder requested your presence. The air is thick with fog and something unseen watches. Do you approach the village center or investigate the forest path to the side?",
+        choices: [
+          { text: "Head to the village center", next: "village_center" },
+          { text: "Slip into the forest path", next: "forest_path" }
+        ]
+      },
+      village_center: {
+        text: "Villagers whisper nervously. The elder meets your eyes and says, 'You’ve come at last. We feared the veil would take us all.'",
+        choices: [
+          { text: "Ask about the veil", next: "ask_veil" },
+          { text: "Say nothing and observe", next: "observe" }
+        ]
+      },
+      forest_path: {
+        text: "The path winds between twisted trees. You find strange symbols carved into the bark and hear whispers just beyond your hearing.",
+        choices: [
+          { text: "Touch the symbols", next: "touch_symbols" },
+          { text: "Turn back to the village", next: "village_center" }
+        ]
+      },
+      ask_veil: {
+        text: "'The veil is a boundary between this world and the next,' the elder says. 'It’s thinning — and something is coming through.'",
+        choices: [{ text: "Continue...", next: "act2_placeholder" }]
+      },
+      observe: {
+        text: "You watch the villagers. Fear and hope war in their eyes. You feel the wind shift — like a breath from beyond.",
+        choices: [{ text: "Continue...", next: "act2_placeholder" }]
+      },
+      touch_symbols: {
+        text: "As your fingers brush the symbols, your vision blurs. For a moment, you see another world layered over this one — then it vanishes.",
+        choices: [{ text: "Continue...", next: "act2_placeholder" }]
+      },
+      act2_placeholder: {
+        text: "(Act II content coming soon...)",
+        choices: []
+      }
+    };
+
+    let player = {
+      character: null
+    };
+
+    function showNode(nodeId) {
+      const node = storyNodes[nodeId];
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = `<p>${node.text}</p>`;
+
+      node.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.textContent = choice.text;
+        btn.onclick = () => {
+          if (choice.character) player.character = choice.character;
+          showNode(choice.next);
+        };
+        gameContainer.appendChild(btn);
+      });
+    }
+
+    showNode("start");
+  </script>
+</body>
+</html>
