@@ -13,6 +13,7 @@
       padding: 20px;
       max-width: 800px;
       margin: auto;
+      position: relative;
     }
     .container {
       margin-top: 40px;
@@ -22,11 +23,28 @@
       color: white;
       border: none;
       padding: 10px 20px;
-      margin: 10px 0;
+      margin: 10px 10px 10px 0;
       cursor: pointer;
     }
     button:hover {
       background-color: #666;
+    }
+    .character {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .character img {
+      width: 120px;
+      height: auto;
+      margin-right: 20px;
+      border: 2px solid #777;
+    }
+    #restartBtn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
     }
   </style>
 </head>
@@ -38,19 +56,23 @@
     const characters = {
       scholar: {
         name: "Wayward Scholar",
-        intro: "A brilliant mind driven by curiosity, you seek forbidden knowledge hidden in forgotten tomes."
+        intro: "A brilliant mind driven by curiosity, you seek forbidden knowledge hidden in forgotten tomes.",
+        img: "scholar.png"
       },
       blade: {
         name: "Wandering Blade",
-        intro: "A weary warrior with a code, you seek redemption in one final mission."
+        intro: "A weary warrior with a code, you seek redemption in one final mission.",
+        img: "blade.png"
       },
       rogue: {
         name: "Shadowed Rogue",
-        intro: "You move in silence, always watching. You trust no one and live by your instincts."
+        intro: "You move in silence, always watching. You trust no one and live by your instincts.",
+        img: "rogue.png"
       },
       mystic: {
         name: "Mystic Acolyte",
-        intro: "You were touched by something beyond this world — a voice from the veil whispers secrets only you can hear."
+        intro: "You were touched by something beyond this world — a voice from the veil whispers secrets only you can hear.",
+        img: "mystic.png"
       }
     };
 
@@ -128,15 +150,52 @@
       const gameContainer = document.getElementById('game');
       gameContainer.innerHTML = `<p>${node.text}</p>`;
 
-      node.choices.forEach(choice => {
-        const btn = document.createElement('button');
-        btn.textContent = choice.text;
-        btn.onclick = () => {
-          if (choice.character) player.character = choice.character;
-          showNode(choice.next);
+      if (nodeId === "start") {
+        node.choices.forEach(choice => {
+          const char = characters[choice.character];
+          const div = document.createElement('div');
+          div.className = 'character';
+          const img = document.createElement('img');
+          img.src = `assets/${char.img}`;
+          img.alt = `${char.name} portrait`;
+          const info = document.createElement('div');
+          info.innerHTML = `<strong>${char.name}</strong><br><em>${char.intro}</em><br>`;
+          const btn = document.createElement('button');
+          btn.textContent = `Play as ${char.name}`;
+          btn.onclick = () => {
+            player.character = choice.character;
+            showNode(choice.next);
+          };
+          info.appendChild(btn);
+          div.appendChild(img);
+          div.appendChild(info);
+          gameContainer.appendChild(div);
+        });
+      } else {
+        node.choices.forEach(choice => {
+          const btn = document.createElement('button');
+          btn.textContent = choice.text;
+          btn.onclick = () => {
+            if (choice.character) player.character = choice.character;
+            showNode(choice.next);
+          };
+          gameContainer.appendChild(btn);
+        });
+      }
+
+      const existingRestart = document.getElementById('restartBtn');
+      if (existingRestart) existingRestart.remove();
+
+      if (nodeId !== "start") {
+        const restartBtn = document.createElement('button');
+        restartBtn.textContent = "🏠 Restart Story";
+        restartBtn.id = "restartBtn";
+        restartBtn.onclick = () => {
+          player.character = null;
+          showNode("start");
         };
-        gameContainer.appendChild(btn);
-      });
+        document.body.appendChild(restartBtn);
+      }
     }
 
     showNode("start");
