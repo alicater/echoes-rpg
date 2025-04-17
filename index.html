@@ -253,7 +253,7 @@
           btn.textContent = `Play as ${char.name}`;
           btn.onclick = () => {
             player.character = choice.character;
-            player.memory = null; // Reset memory when starting a new character
+            player.memory = null; 
             showNode(choice.next);
           };
           info.appendChild(btn);
@@ -292,13 +292,13 @@
       gameContainer.innerHTML = `<p><strong>Your trial begins now...</strong></p>`;
 
       if (player.character === "scholar") {
-        gameContainer.innerHTML += `<p>Enter the correct glyph code (hint: 4312):</p><img src="assets/scholar_puzzle.png" class="story-image">`;
+        gameContainer.innerHTML += `<p>Enter the correct glyph code: (hint: what goes forward, must always look back)</p><img src="assets/scholar_puzzle.png" class="story-image">`;
         let input = document.createElement("input");
         input.type = "text";
         let submit = document.createElement("button");
         submit.textContent = "Submit";
         submit.onclick = () => {
-          if (input.value === "4312") {
+          if (input.value === "2134") {
             alert("The glyphs align and unlock a hidden path.");
             showNode("act4_1");
           } else {
