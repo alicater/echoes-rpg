@@ -46,6 +46,11 @@
       left: 10px;
       z-index: 100;
     }
+    .story-image {
+      max-width: 100%;
+      margin: 15px 0;
+      border: 2px solid #888;
+    }
   </style>
 </head>
 <body>
@@ -80,30 +85,27 @@
       start: {
         text: "Choose your character:",
         choices: [
-          { text: characters.scholar.name, next: "intro_scholar", character: "scholar" },
-          { text: characters.blade.name, next: "intro_blade", character: "blade" },
-          { text: characters.rogue.name, next: "intro_rogue", character: "rogue" },
-          { text: characters.mystic.name, next: "intro_mystic", character: "mystic" }
+          { text: characters.scholar.name, next: "act1", character: "scholar" },
+          { text: characters.blade.name, next: "act1", character: "blade" },
+          { text: characters.rogue.name, next: "act1", character: "rogue" },
+          { text: characters.mystic.name, next: "act1", character: "mystic" }
         ]
       },
-      intro_scholar: {
-        text: characters.scholar.intro,
-        choices: [{ text: "Continue...", next: "act1" }]
-      },
-      intro_blade: {
-        text: characters.blade.intro,
-        choices: [{ text: "Continue...", next: "act1" }]
-      },
-      intro_rogue: {
-        text: characters.rogue.intro,
-        choices: [{ text: "Continue...", next: "act1" }]
-      },
-      intro_mystic: {
-        text: characters.mystic.intro,
-        choices: [{ text: "Continue...", next: "act1" }]
-      },
       act1: {
-        text: "You arrive at the edge of Hollow Vale, where the village elder requested your presence. The air is thick with fog and something unseen watches. Do you approach the village center or investigate the forest path to the side?",
+        get text() {
+          switch (player.character) {
+            case "scholar":
+              return "As the Wayward Scholar, your obsession with the arcane has brought you to Hollow Vale. Whispers in ancient texts spoke of a breach — a thinning of the veil between worlds — and you intend to witness it firsthand.";
+            case "blade":
+              return "You are the Wandering Blade, once a knight of honor, now a drifter weighed by regret. Rumors of danger in Hollow Vale stirred something in your soul — perhaps this is the redemption you've been seeking.";
+            case "rogue":
+              return "To others, Hollow Vale is a mystery. To you, it’s an opportunity. As the Shadowed Rogue, you’ve followed faint trails and forgotten tales to this cursed place, hoping for a prize no one else dares claim.";
+            case "mystic":
+              return "You are the Mystic Acolyte. Visions have plagued your dreams for weeks — a vale cloaked in fog, voices leaking through cracks in reality. You arrive at the village guided not by logic, but by fate.";
+            default:
+              return "You stand at the edge of Hollow Vale...";
+          }
+        },
         choices: [
           { text: "Head to the village center", next: "village_center" },
           { text: "Slip into the forest path", next: "forest_path" }
@@ -125,18 +127,45 @@
       },
       ask_veil: {
         text: "'The veil is a boundary between this world and the next,' the elder says. 'It’s thinning — and something is coming through.'",
-        choices: [{ text: "Continue...", next: "act2_placeholder" }]
+        choices: [{ text: "Continue...", next: "act2a" }]
       },
       observe: {
         text: "You watch the villagers. Fear and hope war in their eyes. You feel the wind shift — like a breath from beyond.",
-        choices: [{ text: "Continue...", next: "act2_placeholder" }]
+        choices: [{ text: "Continue...", next: "act2a" }]
       },
       touch_symbols: {
         text: "As your fingers brush the symbols, your vision blurs. For a moment, you see another world layered over this one — then it vanishes.",
-        choices: [{ text: "Continue...", next: "act2_placeholder" }]
+        choices: [{ text: "Continue...", next: "act2a" }]
       },
-      act2_placeholder: {
-        text: "(Act II content coming soon...)",
+      act2a: {
+        text: "You venture deeper into the Vale. The fog thickens, and a strange glow flickers in the distance. Whatever lies ahead, you sense it will shape your fate.",
+        choices: [{ text: "Proceed toward the light...", next: "act2b" }]
+      },
+      act2b: {
+        text: "The light leads to an ancient altar where the air buzzes with energy. Depending on who you are, the encounter ahead will challenge your past and reveal your path.",
+        choices: [{ text: "Approach the altar", next: "act2" }]
+      },
+      act2: {
+        get text() {
+          switch (player.character) {
+            case "scholar":
+              return `<img src='assets/scholar_quest.png' class='story-image' alt='Ancient tome in ruins'>As you follow an underground passage revealed by the elder’s clues, you discover a ruined library sealed behind arcane wards. Runes flare as you approach, testing your wit to unlock a tome that hums with forbidden power.`;
+            case "blade":
+              return `<img src='assets/blade_quest.png' class='story-image' alt='Ancient battlefield in mist'>A call leads you to the forgotten battlefield just beyond the Vale. There, shades of your past allies stand in silent judgment. To pass, you must face a spectral version of yourself — a trial of honor and memory.`;
+            case "rogue":
+              return `<img src='assets/rogue_quest.png' class='story-image' alt='Shadowy ruins'>You slip into a sunken crypt marked with sigils only thieves would notice. A puzzle-locked chest and the whisper of a ghostly thief dare you to uncover a hidden truth — but not without risk.`;
+            case "mystic":
+              return `<img src='assets/mystic_quest.png' class='story-image' alt='Veil portal'>The veil calls louder in a clearing veiled in blue flame. You fall into trance, stepping through a tear in reality into a world of spirits. A glowing child waits to test your connection to the other side.`;
+            default:
+              return "The second act continues...";
+          }
+        },
+        choices: [
+          { text: "Continue your journey...", next: "act3_placeholder" }
+        ]
+      },
+      act3_placeholder: {
+        text: "(Act III coming soon...)",
         choices: []
       }
     };
@@ -148,7 +177,8 @@
     function showNode(nodeId) {
       const node = storyNodes[nodeId];
       const gameContainer = document.getElementById('game');
-      gameContainer.innerHTML = `<p>${node.text}</p>`;
+      const displayText = typeof node.text === 'function' || typeof node.text === 'object' ? node.text : () => node.text;
+      gameContainer.innerHTML = `<div>${displayText()}</div>`;
 
       if (nodeId === "start") {
         node.choices.forEach(choice => {
@@ -188,7 +218,7 @@
 
       if (nodeId !== "start") {
         const restartBtn = document.createElement('button');
-        restartBtn.textContent = "🏠 Restart Story";
+        restartBtn.textContent = "Restart Story";
         restartBtn.id = "restartBtn";
         restartBtn.onclick = () => {
           player.character = null;
