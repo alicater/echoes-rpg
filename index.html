@@ -50,6 +50,14 @@
       max-width: 100%;
       margin: 15px 0;
       border: 2px solid #888;
+      display: block;
+    }
+    input {
+      padding: 8px;
+      margin-right: 10px;
+      background-color: #333;
+      color: white;
+      border: 1px solid #666;
     }
   </style>
 </head>
@@ -99,7 +107,7 @@
             case "blade":
               return "You are the Wandering Blade, once a knight of honor, now a drifter weighed by regret. Rumors of danger in Hollow Vale stirred something in your soul — perhaps this is the redemption you've been seeking.";
             case "rogue":
-              return "To others, Hollow Vale is a mystery. To you, it’s an opportunity. As the Shadowed Rogue, you’ve followed faint trails and forgotten tales to this cursed place, hoping for a prize no one else dares claim.";
+              return "To others, Hollow Vale is a mystery. To you, it's an opportunity. As the Shadowed Rogue, you've followed faint trails and forgotten tales to this cursed place, hoping for a prize no one else dares claim.";
             case "mystic":
               return "You are the Mystic Acolyte. Visions have plagued your dreams for weeks — a vale cloaked in fog, voices leaking through cracks in reality. You arrive at the village guided not by logic, but by fate.";
             default:
@@ -112,7 +120,7 @@
         ]
       },
       village_center: {
-        text: "Villagers whisper nervously. The elder meets your eyes and says, 'You’ve come at last. We feared the veil would take us all.'",
+        text: "Villagers whisper nervously. The elder meets your eyes and says, 'You've come at last. We feared the veil would take us all.'",
         choices: [
           { text: "Ask about the veil", next: "ask_veil" },
           { text: "Say nothing and observe", next: "observe" }
@@ -126,7 +134,7 @@
         ]
       },
       ask_veil: {
-        text: "'The veil is a boundary between this world and the next,' the elder says. 'It’s thinning — and something is coming through.'",
+        text: "'The veil is a boundary between this world and the next,' the elder says. 'It's thinning — and something is coming through.'",
         choices: [{ text: "Continue...", next: "act2a" }]
       },
       observe: {
@@ -138,34 +146,38 @@
         choices: [{ text: "Continue...", next: "act2a" }]
       },
       act2a: {
-        text: "You venture deeper into the Vale. The fog thickens, and a strange glow flickers in the distance. Whatever lies ahead, you sense it will shape your fate.",
+        text: `You venture deeper into the Vale. The fog thickens, and a strange glow flickers in the distance. Whatever lies ahead, you sense it will shape your fate.<br><img src='assets/forest_glow.png' class='story-image' alt='Glowing forest path'>`,
         choices: [{ text: "Proceed toward the light...", next: "act2b" }]
       },
       act2b: {
-        text: "The light leads to an ancient altar where the air buzzes with energy. Depending on who you are, the encounter ahead will challenge your past and reveal your path.",
+        text: `The light leads to an ancient altar where the air buzzes with energy. Depending on who you are, the encounter ahead will challenge your past and reveal your path.<br><img src='assets/altar_glow.png' class='story-image' alt='Glowing altar in the forest'>`,
         choices: [{ text: "Approach the altar", next: "act2" }]
       },
       act2: {
         get text() {
           switch (player.character) {
             case "scholar":
-              return `<img src='assets/scholar_quest.png' class='story-image' alt='Ancient tome in ruins'>As you follow an underground passage revealed by the elder’s clues, you discover a ruined library sealed behind arcane wards. Runes flare as you approach, testing your wit to unlock a tome that hums with forbidden power.`;
+              return `As you follow an underground passage revealed by the elder's clues, you discover a ruined library sealed behind arcane wards. Runes flare as you approach, testing your wit to unlock a tome that hums with forbidden power.<br><img src='assets/scholar_quest.png' class='story-image' alt='Ancient tome in ruins'>`;
             case "blade":
-              return `<img src='assets/blade_quest.png' class='story-image' alt='Ancient battlefield in mist'>A call leads you to the forgotten battlefield just beyond the Vale. There, shades of your past allies stand in silent judgment. To pass, you must face a spectral version of yourself — a trial of honor and memory.`;
+              return `A call leads you to the forgotten battlefield just beyond the Vale. There, shades of your past allies stand in silent judgment. To pass, you must face a spectral version of yourself — a trial of honor and memory.<br><img src='assets/blade_quest.png' class='story-image' alt='Ancient battlefield in mist'>`;
             case "rogue":
-              return `<img src='assets/rogue_quest.png' class='story-image' alt='Shadowy ruins'>You slip into a sunken crypt marked with sigils only thieves would notice. A puzzle-locked chest and the whisper of a ghostly thief dare you to uncover a hidden truth — but not without risk.`;
+              return `You slip into a sunken crypt marked with sigils only thieves would notice. A puzzle-locked chest and the whisper of a ghostly thief dare you to uncover a hidden truth — but not without risk.<br><img src='assets/rogue_quest.png' class='story-image' alt='Shadowy ruins'>`;
             case "mystic":
-              return `<img src='assets/mystic_quest.png' class='story-image' alt='Veil portal'>The veil calls louder in a clearing veiled in blue flame. You fall into trance, stepping through a tear in reality into a world of spirits. A glowing child waits to test your connection to the other side.`;
+              return `The veil calls louder in a clearing veiled in blue flame. You fall into trance, stepping through a tear in reality into a world of spirits. A glowing child waits to test your connection to the other side.<br><img src='assets/mystic_quest.png' class='story-image' alt='Veil portal'>`;
             default:
               return "The second act continues...";
           }
         },
         choices: [
-          { text: "Continue your journey...", next: "act3_placeholder" }
+          { text: "Enter the Trial", next: "act3" }
         ]
       },
-      act3_placeholder: {
-        text: "(Act III coming soon...)",
+      act3: {
+        text: "This will be replaced by puzzle logic.",
+        choices: []
+      },
+      act4_placeholder: {
+        text: "(Act IV and conclusion coming soon...)",
         choices: []
       }
     };
@@ -174,23 +186,25 @@
       character: null
     };
 
+    const gameContainer = document.getElementById('game');
+
     function showNode(nodeId) {
       const node = storyNodes[nodeId];
-      const gameContainer = document.getElementById('game');
-      const displayText = typeof node.text === 'function' || typeof node.text === 'object' ? node.text : () => node.text;
-      gameContainer.innerHTML = `<div>${displayText()}</div>`;
+      gameContainer.innerHTML = typeof node.text === "function"
+        ? `<p>${node.text()}</p>`
+        : `<p>${node.text}</p>`;
 
       if (nodeId === "start") {
         node.choices.forEach(choice => {
           const char = characters[choice.character];
-          const div = document.createElement('div');
-          div.className = 'character';
-          const img = document.createElement('img');
+          const div = document.createElement("div");
+          div.className = "character";
+          const img = document.createElement("img");
           img.src = `assets/${char.img}`;
           img.alt = `${char.name} portrait`;
-          const info = document.createElement('div');
-          info.innerHTML = `<strong>${char.name}</strong><br><em>${char.intro}</em><br>`;
-          const btn = document.createElement('button');
+          const info = document.createElement("div");
+          info.innerHTML = `<strong>${char.name}</strong><br><em>${char.intro}</em>`;
+          const btn = document.createElement("button");
           btn.textContent = `Play as ${char.name}`;
           btn.onclick = () => {
             player.character = choice.character;
@@ -201,23 +215,22 @@
           div.appendChild(info);
           gameContainer.appendChild(div);
         });
+      } else if (nodeId === "act3") {
+        runPuzzle();
       } else {
         node.choices.forEach(choice => {
-          const btn = document.createElement('button');
+          const btn = document.createElement("button");
           btn.textContent = choice.text;
-          btn.onclick = () => {
-            if (choice.character) player.character = choice.character;
-            showNode(choice.next);
-          };
+          btn.onclick = () => showNode(choice.next);
           gameContainer.appendChild(btn);
         });
       }
 
-      const existingRestart = document.getElementById('restartBtn');
+      const existingRestart = document.getElementById("restartBtn");
       if (existingRestart) existingRestart.remove();
 
       if (nodeId !== "start") {
-        const restartBtn = document.createElement('button');
+        const restartBtn = document.createElement("button");
         restartBtn.textContent = "Restart Story";
         restartBtn.id = "restartBtn";
         restartBtn.onclick = () => {
@@ -225,6 +238,78 @@
           showNode("start");
         };
         document.body.appendChild(restartBtn);
+      }
+    }
+
+    function runPuzzle() {
+      gameContainer.innerHTML = `<p><strong>Your trial begins now...</strong></p>`;
+
+      if (player.character === "scholar") {
+        gameContainer.innerHTML += `<p>Enter the correct glyph code (hint: 4312):</p><img src="assets/scholar_puzzle.png" class="story-image">`;
+        let input = document.createElement("input");
+        input.type = "text";
+        let submit = document.createElement("button");
+        submit.textContent = "Submit";
+        submit.onclick = () => {
+          if (input.value === "4312") {
+            alert("The glyphs align and unlock a hidden path.");
+            showNode("act4_placeholder");
+          } else {
+            alert("The glyphs burn red. Try again.");
+          }
+        };
+        gameContainer.appendChild(input);
+        gameContainer.appendChild(submit);
+
+      } else if (player.character === "blade") {
+        gameContainer.innerHTML += `<p>Which memory do you face?</p><img src="assets/blade_puzzle.png" class="story-image">`;
+        let btn1 = document.createElement("button");
+        btn1.textContent = "A memory of sacrifice";
+        btn1.onclick = () => {
+          alert("The spirits bow in respect.");
+          showNode("act4_placeholder");
+        };
+        let btn2 = document.createElement("button");
+        btn2.textContent = "A memory of failure";
+        btn2.onclick = () => {
+          alert("A lesson learned. The spirits nod.");
+          showNode("act4_placeholder");
+        };
+        gameContainer.appendChild(btn1);
+        gameContainer.appendChild(btn2);
+
+      } else if (player.character === "rogue") {
+        gameContainer.innerHTML += `<p>Pick the right sequence to unlock the chest:</p><img src="assets/rogue_puzzle.png" class="story-image">`;
+        ["OWL", "BAT", "FOX"].forEach(option => {
+          let btn = document.createElement("button");
+          btn.textContent = option;
+          btn.onclick = () => {
+            if (option === "FOX") {
+              alert("You hear a click. The chest opens.");
+              showNode("act4_placeholder");
+            } else {
+              alert("Wrong! A trap nearly springs. Try again.");
+            }
+          };
+          gameContainer.appendChild(btn);
+        });
+
+      } else if (player.character === "mystic") {
+        gameContainer.innerHTML += `<p>The spirit whispers: "I speak without a mouth and hear without ears. What am I?"</p><img src="assets/mystic_puzzle.png" class="story-image">`;
+        let input = document.createElement("input");
+        input.type = "text";
+        let submit = document.createElement("button");
+        submit.textContent = "Answer";
+        submit.onclick = () => {
+          if (input.value.toLowerCase().includes("echo")) {
+            alert("The spirit smiles. You are ready.");
+            showNode("act4_placeholder");
+          } else {
+            alert("The spirit tilts its head. That is not the answer.");
+          }
+        };
+        gameContainer.appendChild(input);
+        gameContainer.appendChild(submit);
       }
     }
 
