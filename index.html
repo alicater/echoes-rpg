@@ -120,7 +120,7 @@
         ]
       },
       village_center: {
-        text: "Villagers whisper nervously. The elder meets your eyes and says, 'You've come at last. We feared the veil would take us all.'",
+        text: `Villagers whisper nervously. The elder meets your eyes and says, 'You've come at last. We feared the veil would take us all.'<br><img src='assets/village_center.png' class='story-image' alt='Bustling village center'>`,
         choices: [
           { text: "Ask about the veil", next: "ask_veil" },
           { text: "Say nothing and observe", next: "observe" }
@@ -176,14 +176,59 @@
         text: "This will be replaced by puzzle logic.",
         choices: []
       },
-      act4_placeholder: {
-        text: "(Act IV and conclusion coming soon...)",
-        choices: []
+      act4_1: {
+        get text() {
+          const memory = player.memory;
+          switch (player.character) {
+            case "scholar":
+              return `As the tome opens, ink begins to shift across the page, forming forbidden knowledge in a language only you can read. Reality around you flickers. The price of understanding is steep.<br><img src='assets/scholar_final1.png' class='story-image' alt='Scholar conclusion scene 1'>`;
+            case "blade":
+              if (memory === "sacrifice") {
+                return `You see yourself in that final moment, choosing the lives of others over your own. The spirits nod. This is the honor they remembered.<br><img src='assets/blade_final1_sacrifice.png' class='story-image' alt='Blade sacrifice memory'>`;
+              } else {
+                return `The image of your past failure burns in your memory, yet this time you face it with open eyes. The spirits linger — not in judgment, but in witness.<br><img src='assets/blade_final1_failure.png' class='story-image' alt='Blade failure memory'>`;
+              }
+            case "rogue":
+              return `You crouch beside the opened chest. Inside, a crystal pulsates with stolen whispers. You tuck it away as footsteps approach from behind — but there's only shadow.<br><img src='assets/rogue_final1.png' class='story-image' alt='Rogue conclusion scene 1'>`;
+            case "mystic":
+              return `The spirit child beckons, stepping into the veil. You follow, if only briefly. What you see there is beyond description — a truth few mortals are allowed.<br><img src='assets/mystic_final1.png' class='story-image' alt='Mystic conclusion scene 1'>`;
+            default:
+              return "The ending begins to unfold...";
+          }
+        },
+        choices: [
+          { text: "Continue...", next: "act4_2" }
+        ]
+      },
+      act4_2: {
+        get text() {
+          const memory = player.memory;
+          switch (player.character) {
+            case "scholar":
+              return `With the tome in hand, knowledge floods your mind — but at a cost. You have unlocked secrets meant to remain buried. As you leave Hollow Vale, the lines between worlds blur behind you.<br><img src='assets/scholar_final2.png' class='story-image' alt='Scholar conclusion scene 2'>`;
+            case "blade":
+              if (memory === "sacrifice") {
+                return `The villagers hail your courage. The veil stabilizes for now, and you vanish into the mist — not as a warrior seeking glory, but as a guardian who found peace in sacrifice.<br><img src='assets/blade_final2_sacrifice.png' class='story-image' alt='Blade sacrifice ending'>`;
+              } else {
+                return `Redemption was never about fixing the past — it was about facing it. As you turn away from the battlefield, the veil seals behind you. You walk on, lighter than before.<br><img src='assets/blade_final2_failure.png' class='story-image' alt='Blade redemption ending'>`;
+              }
+            case "rogue":
+              return `By dawn, you are gone. The villagers whisper about a thief who walked between worlds. But the veil no longer trembles, and the treasure no longer calls.<br><img src='assets/rogue_final2.png' class='story-image' alt='Rogue conclusion scene 2'>`;
+            case "mystic":
+              return `The veil heals. You awaken alone in the clearing, the spirit gone. But now you carry something within you — a connection that can never be severed.<br><img src='assets/mystic_final2.png' class='story-image' alt='Mystic conclusion scene 2'>`;
+            default:
+              return "The veil closes, for now...";
+          }
+        },
+        choices: [
+          { text: "Play Again", next: "start" }
+        ]
       }
     };
 
     let player = {
-      character: null
+      character: null,
+      memory: null
     };
 
     const gameContainer = document.getElementById('game');
@@ -203,11 +248,12 @@
           img.src = `assets/${char.img}`;
           img.alt = `${char.name} portrait`;
           const info = document.createElement("div");
-          info.innerHTML = `<strong>${char.name}</strong><br><em>${char.intro}</em>`;
+          info.innerHTML = `<strong>${char.name}</strong><br><br><em>${char.intro}</em><br><br>`;
           const btn = document.createElement("button");
           btn.textContent = `Play as ${char.name}`;
           btn.onclick = () => {
             player.character = choice.character;
+            player.memory = null; // Reset memory when starting a new character
             showNode(choice.next);
           };
           info.appendChild(btn);
@@ -235,6 +281,7 @@
         restartBtn.id = "restartBtn";
         restartBtn.onclick = () => {
           player.character = null;
+          player.memory = null;
           showNode("start");
         };
         document.body.appendChild(restartBtn);
@@ -253,7 +300,7 @@
         submit.onclick = () => {
           if (input.value === "4312") {
             alert("The glyphs align and unlock a hidden path.");
-            showNode("act4_placeholder");
+            showNode("act4_1");
           } else {
             alert("The glyphs burn red. Try again.");
           }
@@ -266,14 +313,16 @@
         let btn1 = document.createElement("button");
         btn1.textContent = "A memory of sacrifice";
         btn1.onclick = () => {
+          player.memory = "sacrifice";
           alert("The spirits bow in respect.");
-          showNode("act4_placeholder");
+          showNode("act4_1");
         };
         let btn2 = document.createElement("button");
         btn2.textContent = "A memory of failure";
         btn2.onclick = () => {
+          player.memory = "failure";
           alert("A lesson learned. The spirits nod.");
-          showNode("act4_placeholder");
+          showNode("act4_1");
         };
         gameContainer.appendChild(btn1);
         gameContainer.appendChild(btn2);
@@ -286,7 +335,7 @@
           btn.onclick = () => {
             if (option === "FOX") {
               alert("You hear a click. The chest opens.");
-              showNode("act4_placeholder");
+              showNode("act4_1");
             } else {
               alert("Wrong! A trap nearly springs. Try again.");
             }
@@ -303,7 +352,7 @@
         submit.onclick = () => {
           if (input.value.toLowerCase().includes("echo")) {
             alert("The spirit smiles. You are ready.");
-            showNode("act4_placeholder");
+            showNode("act4_1");
           } else {
             alert("The spirit tilts its head. That is not the answer.");
           }
