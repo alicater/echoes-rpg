@@ -1,0 +1,23 @@
+body {
+    background: url('../assets/parchment_texture.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #3a2e1a;
+    font-family: 'Georgia', serif;
+    padding: 40px;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    border: 1px solid #b09b7d;
+    background-color: rgba(255,248,220,0.9); /* fallback if texture fails */
+  }
+  h1, h2 {
+    color: #5c4225;
+    border-bottom: 1px solid #a58a6f;
+    padding-bottom: 4px;
+  }
+  a {
+    color: #6e4d2f;
+    text-decoration: underline;
+  }
+  

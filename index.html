@@ -221,9 +221,18 @@
           }
         },
         choices: [
+          { text: "Read the Lore Journal", next: "lore_journal" },
           { text: "Play Again", next: "start" }
         ]
-      }
+      },
+
+      lore_journal: {
+        text: `<p>The lore continues beyond the veil. Visit the full journal here:</p>
+        <p><a href='text/lore_journal.html' target='_blank' style='color: #aad; text-decoration: underline;'>Open the Lore Journal Contents</a></p>`,
+        choices: [
+          { text: "Back to Start", next: "start" }
+        ]
+      },
     };
 
     let player = {
@@ -344,7 +353,7 @@
         });
 
       } else if (player.character === "mystic") {
-        gameContainer.innerHTML += `<p>The spirit whispers: "I speak without a mouth and hear without ears. What am I?"</p><img src="assets/mystic_puzzle.png" class="story-image">`;
+        gameContainer.innerHTML += `<p>You hear a whisper: "I speak without a mouth and hear without ears. What am I?"</p><img src="assets/mystic_puzzle.png" class="story-image">`;
         let input = document.createElement("input");
         input.type = "text";
         let submit = document.createElement("button");
